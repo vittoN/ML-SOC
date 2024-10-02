@@ -116,7 +116,7 @@ def calculate_gain_O25(row):
         return 0
 
 
-def trainLogRegModel(x_train, y_train):
+def trainLogRegModel(x_train, y_train, class_weight=None):
     """
     Train a logistic regression model.
 
@@ -136,7 +136,7 @@ def trainLogRegModel(x_train, y_train):
     reg = 0.01
 
     # train a logistic regression model on the training set
-    model = LogisticRegression(C=1/reg, multi_class='ovr',
+    model = LogisticRegression(C=1/reg, multi_class='ovr', class_weight=class_weight,
                                solver="liblinear", random_state=42).fit(x_train, y_train)
     return model
 
