@@ -325,3 +325,81 @@ def getAltriData():
     global altriData
     altriData = _processData(altriData, '../data/mergedAltriDati.xlsx')
     return altriData
+
+completeATWData = None
+def getCompleteATWData():
+    """
+    Metodo specifico per elaborare i dati Altri.
+    """
+    global completeATWData
+    completeATWData = _processData(completeATWData, '../data/completeATW.xlsx')
+    return completeATWData
+
+def calcola_away_to_score(quota_home_win, quota_away_win, quota_draw):
+  """
+  Calcola la probabilità di "Away to score" e la quota corrispondente 
+  date le quote di vittoria della squadra di casa, della squadra ospite e del pareggio.
+
+  Args:
+    quota_home_win: Quota della vittoria della squadra di casa.
+    quota_away_win: Quota della vittoria della squadra ospite.
+    quota_draw: Quota del pareggio.
+
+  Returns:
+    Una tupla contenente la probabilità di "Away to score" e la quota corrispondente.
+  """
+
+  # Calcola le probabilità di vittoria e pareggio
+  prob_home_win = 1 / quota_home_win
+  prob_away_win = 1 / quota_away_win
+  prob_draw = 1 / quota_draw  # Utilizza la quota del pareggio per calcolare la probabilità
+
+  # Normalizza le probabilità in modo che la loro somma sia 1
+  total_prob = prob_home_win + prob_away_win + prob_draw
+  prob_home_win /= total_prob
+  prob_away_win /= total_prob
+  prob_draw /= total_prob
+
+  # Ipotesi semplificative sulle probabilità condizionali
+  prob_away_score_given_home_win = 0.5
+#   prob_home_score_given_away_win = 0.55
+  prob_bts_given_draw = 0.5
+
+  # Calcola la probabilità di "Both Teams To Score" (BTS)
+#   prob_bts = (1 - prob_home_win * (1 - prob_away_score_given_home_win) - 
+#               prob_away_win * (1 - prob_home_score_given_away_win) - 
+#               prob_draw * (1 - prob_bts_given_draw))
+
+  # Calcola la probabilità di "Away to score"
+  prob_away_to_score = (prob_away_win + 
+                        prob_draw * prob_bts_given_draw + 
+                        prob_home_win * prob_away_score_given_home_win)
+
+  # Calcola la quota "Away to score"
+  quota_away_to_score = 1 / prob_away_to_score
+
+  return prob_away_to_score, quota_away_to_score
+
+def calculate_gain_ATS(row, prediction, quotaMin = 1.40):
+    if (row[prediction] == 1):
+        if row['QuotaATS'] > quotaMin :
+            if row['FTAG'] > 0:
+                return row['QuotaATS']-1
+            else:
+                return -1
+        else:
+            return 0
+    else:
+        return 0
+    
+def calculate_gain_ATW(row, prediction, quotaMin = 1.40):
+    if (row[prediction] == 1):
+        if row['QuotaATW'] > quotaMin :
+            if row['FTR'] == 'A':
+                return row['QuotaATW']-1
+            else:
+                return -1
+        else:
+            return 0
+    else:
+        return 0
