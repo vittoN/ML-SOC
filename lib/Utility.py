@@ -403,3 +403,27 @@ def calculate_gain_ATW(row, prediction, quotaMin = 1.40):
             return 0
     else:
         return 0
+    
+def calculate_gain_ANTS(row, prediction, quotaMin = 1.40):
+    if (row[prediction] == 0):
+        if row['QuotaANTS'] > quotaMin :
+            if row['FTAG'] == 0:
+                return row['QuotaANTS']-1
+            else:
+                return -1
+        else:
+            return 0
+    else:
+        return 0
+    
+def calculate_gain_ReverseATS(row, prediction, quotaMin = 1.40):
+    if (row[prediction] == 1):
+        if row['QuotaANTS'] > quotaMin :
+            if row['FTAG'] == 0:
+                return row['QuotaANTS']-1
+            else:
+                return -1
+        else:
+            return 0
+    else:
+        return 0
